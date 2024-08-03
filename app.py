@@ -1,8 +1,7 @@
 import streamlit as st
-import preprocessor
-import support
-
-import preprocessor
+import preprocessor, support
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 st.sidebar.title("Whatsapp Chat Analyzer")
 
@@ -27,10 +26,10 @@ if uploaded_file is not None:
         col1, col2 = st.columns(2)
 
         with col1:
-            st.header("1. Total Messages")
+            st.header("Total Messages")
             st.title(num_messages)
         with col2:
-            st.header("2. Total Words")
+            st.header("Total Words")
             st.title(words)
 
         col3, col4 = st.columns(2)
@@ -40,3 +39,36 @@ if uploaded_file is not None:
         with col4:
             st.header("Links Shared")
             st.title(num_links)
+
+        # finding the busiest users in the group(Group level)
+        if selected_user == 'Overall':
+            x, new_df = support.most_busy_users(df)
+            fig, ax = plt.subplots()
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.title('Most Busy Users')
+                ax.bar(x.index, x.values, color='green')
+                plt.xticks(rotation = 30)
+                st.pyplot(fig)
+
+            with col2:
+                st.title("Most Active user Percentage")
+                st.dataframe(new_df)
+
+        # WordCloud
+        st.title("Wordcloud")
+        df_wc = support.create_wordcloud(selected_user, df)
+        fig, ax = plt.subplots()
+        ax.imshow(df_wc)
+        st.pyplot(fig)
+
+        # most common words
+        most_common_df = support.most_common_words(selected_user, df)
+
+        fig, ax = plt.subplots()
+        ax.barh(most_common_df[0], most_common_df[1])
+
+        st.title('Most commmon words')
+        st.pyplot(fig)
