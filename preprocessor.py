@@ -6,7 +6,7 @@ def preprocess(data):
     messages = re.split(pattern, data)[1:]
     dates = re.findall(pattern,data)
     df = pd.DataFrame({'user_message': messages, 'message_date': dates})
-    # convert message_date type
+    # convert data type of message_date
     df['message_date'] = pd.to_datetime(df['message_date'], format="%d/%m/%y, %I:%M %p - ")
 
     df.rename(columns={'message_date': 'date'}, inplace=True)
@@ -44,6 +44,6 @@ def preprocess(data):
         else:
             period.append(str(hour) + "-" + str(hour + 1))
 
-    df['period'] = period
+    df['hourly_period'] = period
 
     return df
