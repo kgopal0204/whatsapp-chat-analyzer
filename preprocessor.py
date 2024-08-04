@@ -1,10 +1,11 @@
 import pandas as pd
 import re
 
+
 def preprocess(data):
     pattern = "\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{1,2}\s[a,p]{1}m\s-\s"
     messages = re.split(pattern, data)[1:]
-    dates = re.findall(pattern,data)
+    dates = re.findall(pattern, data)
     df = pd.DataFrame({'user_message': messages, 'message_date': dates})
     # convert data type of message_date
     df['message_date'] = pd.to_datetime(df['message_date'], format="%d/%m/%y, %I:%M %p - ")

@@ -1,5 +1,6 @@
 import streamlit as st
-import preprocessor, support
+import preprocessor
+import support
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -15,7 +16,7 @@ if uploaded_file is not None:
     user_list = df["user"].unique().tolist()
     user_list.remove("group_notification")
     user_list.sort()
-    user_list.insert(0,"Overall Group")
+    user_list.insert(0, "Overall Group")
 
     selected_user = st.sidebar.selectbox("Select option to Analysis", user_list)
 
@@ -81,7 +82,7 @@ if uploaded_file is not None:
         st.title("Weekly Activity Heatmap :")
         user_heatmap = support.period_heatmap(selected_user, df)
         fig, ax = plt.subplots()
-        ax = sns.heatmap(user_heatmap)
+        sns.heatmap(user_heatmap, ax=ax)
         st.pyplot(fig)
 
         # finding the busiest users in the group(Group level)
@@ -94,7 +95,7 @@ if uploaded_file is not None:
             with col2:
                 st.title('Most Busy Users')
                 ax.bar(x.index, x.values, color='green')
-                plt.xticks(rotation = 30)
+                plt.xticks(rotation=30)
                 st.pyplot(fig)
 
             with col1:
@@ -109,7 +110,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
 
         # most common words
-        st.title('Most commmon words :')
+        st.title('Most Common Words :')
         most_common_df = support.most_common_words(selected_user, df)
 
         fig, ax = plt.subplots()
@@ -128,4 +129,3 @@ if uploaded_file is not None:
             fig, ax = plt.subplots()
             ax.pie(emoji_df[1].head(), labels=emoji_df[0].head(), autopct="%0.2f")
             st.pyplot(fig)
-

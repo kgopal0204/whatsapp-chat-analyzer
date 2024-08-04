@@ -6,6 +6,7 @@ import emoji
 
 extractor = URLExtract()
 
+
 def fetch_stats(selected_user, df):
 
     if selected_user != "Overall Group":
@@ -28,13 +29,15 @@ def fetch_stats(selected_user, df):
 
     return num_messages, len(words), num_media_messages, len(links)
 
+
 def most_busy_users(df):
     x = df["user"].value_counts().head()
     df = round((df['user'].value_counts() / df.shape[0]) * 100, 2).reset_index().rename(
         columns={'index': 'name', 'user': 'percent'})
     return x, df
 
-def create_wordcloud(selected_user,df):
+
+def create_wordcloud(selected_user, df):
 
     f = open('stop_hinglish.txt', 'r')
     stop_words = f.read()
@@ -52,14 +55,15 @@ def create_wordcloud(selected_user,df):
                 y.append(word)
         return " ".join(y)
 
-    wc = WordCloud(width=400,height=400,min_font_size=8,background_color='white')
+    wc = WordCloud(width=400, height=400, min_font_size=8, background_color='white')
     temp['message'] = temp['message'].apply(remove_stop_words)
     df_wc = wc.generate(temp['message'].str.cat(sep=" "))
     return df_wc
 
-def most_common_words(selected_user,df):
 
-    f = open('stop_hinglish.txt','r')
+def most_common_words(selected_user, df):
+
+    f = open('stop_hinglish.txt', 'r')
     stop_words = f.read()
 
     if selected_user != 'Overall Group':
@@ -77,7 +81,8 @@ def most_common_words(selected_user,df):
     most_common_df = pd.DataFrame(Counter(words).most_common(12))
     return most_common_df
 
-def emoji_helper(selected_user,df):
+
+def emoji_helper(selected_user, df):
     if selected_user != 'Overall Group':
         df = df[df['user'] == selected_user]
 
@@ -90,7 +95,7 @@ def emoji_helper(selected_user,df):
     return emoji_df
 
 
-def monthly_timeline(selected_user,df):
+def monthly_timeline(selected_user, df):
 
     if selected_user != 'Overall Group':
         df = df[df['user'] == selected_user]
@@ -105,35 +110,39 @@ def monthly_timeline(selected_user,df):
 
     return timeline
 
-def daily_timeline(selected_user,df):
+
+def daily_timeline(selected_user, df):
 
     if selected_user != 'Overall Group':
         df = df[df['user'] == selected_user]
 
-    daily_timeline = df.groupby('only_date').count()['message'].reset_index()
+    daily_timeline_df = df.groupby('only_date').count()['message'].reset_index()
 
-    return daily_timeline
+    return daily_timeline_df
 
 
-def week_activity_map(selected_user,df):
+def week_activity_map(selected_user, df):
 
     if selected_user != 'Overall Group':
         df = df[df['user'] == selected_user]
 
     return df['day_name'].value_counts()
 
-def month_activity_map(selected_user,df):
+
+def month_activity_map(selected_user, df):
 
     if selected_user != 'Overall Group':
         df = df[df['user'] == selected_user]
 
     return df['month'].value_counts()
 
-def period_heatmap(selected_user,df):
+
+def period_heatmap(selected_user, df):
 
     if selected_user != 'Overall Group':
         df = df[df['user'] == selected_user]
 
-    user_heatmap = df.pivot_table(index='day_name', columns='hourly_period', values='message', aggfunc='count').fillna(0)
+    user_heatmap = df.pivot_table(index='day_name', columns='hourly_period', values='message',
+                                  aggfunc='count').fillna(0)
 
     return user_heatmap
