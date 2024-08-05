@@ -3,19 +3,30 @@ import re
 
 
 def preprocess(data):
-    pattern = "\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{1,2}\s[a,p]{1}m\s-\s"
+    pattern = r"\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{1,2}\s[a,p,A,P]{1}[m,M]{1}\s-\s"
     messages = re.split(pattern, data)[1:]
     dates = re.findall(pattern, data)
     df = pd.DataFrame({'user_message': messages, 'message_date': dates})
+
+    df["message_date"] = df["message_date"].str.replace("\u202f", " ")
+
     # convert data type of message_date
-    df['message_date'] = pd.to_datetime(df['message_date'], format="%d/%m/%y, %I:%M %p - ")
+    def convert_date(date_str):
+        if re.search(r"\d{1,2}/\d{1,2}/\d{4}", date_str):
+            return pd.to_datetime(date_str, format="%d/%m/%Y, %I:%M %p - ")
+        elif re.search(r"\d{1,2}/\d{1,2}/\d{2}", date_str):
+            return pd.to_datetime(date_str, format="%d/%m/%y, %I:%M %p - ")
+        else:
+            return pd.NaT  # Return NaT if the date format is not recognized
+
+    df["message_date"] = df["message_date"].apply(convert_date)
 
     df.rename(columns={'message_date': 'date'}, inplace=True)
 
     users = []
     messages = []
     for message in df['user_message']:
-        entry = re.split('([\w\W]+?):\s', message)
+        entry = re.split(r'([\w\W]+?):\s', message)
         if entry[1:]:  # user name
             users.append(entry[1])
             messages.append(" ".join(entry[2:]))

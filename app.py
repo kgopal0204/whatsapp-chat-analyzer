@@ -20,7 +20,8 @@ if uploaded_file is not None:
 
     selected_user = st.sidebar.selectbox("Select option to Analysis", user_list)
 
-    st.markdown(f'<h1 style="color: #FF0000;">Analysis of {selected_user}</h1>', unsafe_allow_html=True)
+    st.title("Analysis of " + selected_user + " :")
+    # st.markdown(f'<h1 style="color: green;">Analysis of {selected_user}</h1>', unsafe_allow_html=True)
 
     if st.sidebar.button("Show Analysis"):
         num_messages, words, num_media_messages, num_links = support.fetch_stats(selected_user, df)
@@ -92,15 +93,15 @@ if uploaded_file is not None:
 
             col1, col2 = st.columns(2)
 
+            with col1:
+                st.title("Most Active user Percentage")
+                st.dataframe(new_df)
+
             with col2:
                 st.title('Most Busy Users')
                 ax.bar(x.index, x.values, color='green')
                 plt.xticks(rotation=30)
                 st.pyplot(fig)
-
-            with col1:
-                st.title("Most Active user Percentage")
-                st.dataframe(new_df)
 
         # WordCloud
         st.title("Wordcloud :")
@@ -127,5 +128,5 @@ if uploaded_file is not None:
             st.dataframe(emoji_df)
         with col2:
             fig, ax = plt.subplots()
-            ax.pie(emoji_df[1].head(), labels=emoji_df[0].head(), autopct="%0.2f")
+            ax.pie(emoji_df["count"].head(), labels=emoji_df["emoji"].head(), autopct="%0.2f")
             st.pyplot(fig)

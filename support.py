@@ -33,7 +33,7 @@ def fetch_stats(selected_user, df):
 def most_busy_users(df):
     x = df["user"].value_counts().head()
     df = round((df['user'].value_counts() / df.shape[0]) * 100, 2).reset_index().rename(
-        columns={'index': 'name', 'user': 'percent'})
+        columns={'count': 'percent'})
     return x, df
 
 
@@ -90,7 +90,8 @@ def emoji_helper(selected_user, df):
     for message in df['message']:
         emojis.extend([c for c in message if c in emoji.EMOJI_DATA])
 
-    emoji_df = pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis))))
+    emoji_df = pd.DataFrame(Counter(emojis).most_common(len(Counter(emojis))), columns=["emoji", "count"])
+    # emoji_df.rename(columns={0:"emoji", 1:"count"})
 
     return emoji_df
 
