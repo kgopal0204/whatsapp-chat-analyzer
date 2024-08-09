@@ -3,10 +3,13 @@ import preprocessor
 import support
 import matplotlib.pyplot as plt
 import seaborn as sns
+import time
 
 st.sidebar.title("Whatsapp Chat Analyzer")
+st.title("WhatsApp Chat Analyzer")
+st.markdown("**Developed with Streamlit, Developed by Krishna Gopal**")
 
-uploaded_file = st.sidebar.file_uploader("Choose a File")
+uploaded_file = st.sidebar.file_uploader("Choose a WhatsApp Text File")
 if uploaded_file is not None:
     bytes_data = uploaded_file.getvalue()
     data = bytes_data.decode("utf-8")
@@ -20,36 +23,52 @@ if uploaded_file is not None:
 
     selected_user = st.sidebar.selectbox("Select option to Analysis", user_list)
 
-    st.title("Analysis of " + selected_user + " :")
-    # st.markdown(f'<h1 style="color: green;">Analysis of {selected_user}</h1>', unsafe_allow_html=True)
+    st.header("Analysis of " + selected_user + " :")
 
     if st.sidebar.button("Show Analysis"):
-        num_messages, words, num_media_messages, num_links = support.fetch_stats(selected_user, df)
+        start_date,last_date, num_messages, words, num_media_messages, num_links, members = (
+            support.fetch_stats(selected_user, df))
+
+        with st.spinner("Analyzing..."):
+            time.sleep(2)
 
         st.title("Top Statistics :")
+
         col1, col2 = st.columns(2)
 
         with col1:
-            st.header("Total Messages")
-            st.title(num_messages)
+            st.subheader("Chat From:")
+            st.header(start_date)
         with col2:
-            st.header("Total Words")
-            st.title(words)
+            st.subheader("Chat To:")
+            st.header(last_date)
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.subheader("Total Messages:")
+            st.header(num_messages)
+        with col2:
+            st.subheader("Total Used Words:")
+            st.header(words)
 
         col3, col4 = st.columns(2)
         with col3:
-            st.header("Total Media Shared")
-            st.title(num_media_messages)
+            st.subheader("Total Media Shared:")
+            st.header(num_media_messages)
         with col4:
-            st.header("Total Links Shared")
-            st.title(num_links)
+            st.subheader("Total Links Shared:")
+            st.header(num_links)
+
+        st.subheader("Total Members:")
+        st.header(members)
 
         # monthly timeline
         st.title("Monthly Timeline :")
         timeline = support.monthly_timeline(selected_user, df)
         fig, ax = plt.subplots()
         ax.plot(timeline['time'], timeline['message'], color='green')
-        plt.xticks(rotation=45)
+        plt.xticks(rotation=90)
         st.pyplot(fig)
 
         # daily timeline

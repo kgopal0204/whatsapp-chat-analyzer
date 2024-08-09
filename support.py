@@ -12,6 +12,12 @@ def fetch_stats(selected_user, df):
     if selected_user != "Overall Group":
         df = df[df["user"] == selected_user]
 
+    # starting date of group
+    start_date = df["only_date"].min()
+
+    # last date of group
+    last_date = df["only_date"].max()
+
     # fetch number of messages
     num_messages = df.shape[0]
     # fetch number of words
@@ -22,12 +28,15 @@ def fetch_stats(selected_user, df):
     # fetch number of media messages
     num_media_messages = df[df['message'] == '<Media omitted>\n'].shape[0]
 
+    # No. of group members
+    members = df["user"].nunique() -1
+
     # fetch number of links shared
     links = []
     for message in df["message"]:
         links.extend(extractor.find_urls(message))
 
-    return num_messages, len(words), num_media_messages, len(links)
+    return start_date,last_date, num_messages, len(words), num_media_messages, len(links), members
 
 
 def most_busy_users(df):
