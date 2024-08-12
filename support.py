@@ -28,13 +28,13 @@ def fetch_stats(selected_user, df):
     # fetch number of media messages
     num_media_messages = df[df['message'] == '<Media omitted>\n'].shape[0]
 
-    # No. of group members
-    members = df["user"].nunique() -1
-
     # fetch number of links shared
     links = []
     for message in df["message"]:
         links.extend(extractor.find_urls(message))
+
+    # No. of group members
+    members = df["user"].nunique() - 1
 
     return start_date,last_date, num_messages, len(words), num_media_messages, len(links), members
 

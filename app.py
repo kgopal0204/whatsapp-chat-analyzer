@@ -6,11 +6,13 @@ import seaborn as sns
 import time
 
 st.sidebar.title("Whatsapp Chat Analyzer")
-st.title("WhatsApp Chat Analyzer")
-st.markdown("**Developed with Streamlit, Developed by Krishna Gopal**")
+st.title(":rainbow[WhatsApp Chat Analyzer]")
+st.markdown("**Developed with Streamlit, Developed by :rainbow[Krishna Gopal]**")
 
 uploaded_file = st.sidebar.file_uploader("Choose a WhatsApp Text File")
-if uploaded_file is not None:
+
+if (uploaded_file is not None) and (uploaded_file.name.endswith("txt")):
+
     bytes_data = uploaded_file.getvalue()
     data = bytes_data.decode("utf-8")
     df = preprocessor.preprocess(data)
@@ -23,48 +25,49 @@ if uploaded_file is not None:
 
     selected_user = st.sidebar.selectbox("Select option to Analysis", user_list)
 
-    st.header("Analysis of " + selected_user + " :")
+    st.header("Analysis of " + f':rainbow[{selected_user}]' + " :", divider='rainbow')
 
     if st.sidebar.button("Show Analysis"):
-        start_date,last_date, num_messages, words, num_media_messages, num_links, members = (
+        start_date, last_date, num_messages, words, num_media_messages, num_links, members = (
             support.fetch_stats(selected_user, df))
 
         with st.spinner("Analyzing..."):
             time.sleep(2)
 
-        st.title("Top Statistics :")
+        st.title(":orange[Top Statistics :]")
 
         col1, col2 = st.columns(2)
 
         with col1:
-            st.subheader("Chat From:")
+            st.subheader(":violet[Chat From :]")
             st.header(start_date)
         with col2:
-            st.subheader("Chat To:")
+            st.subheader(":violet[Chat To :]")
             st.header(last_date)
 
         col1, col2 = st.columns(2)
 
         with col1:
-            st.subheader("Total Messages:")
+            st.subheader(":violet[Total Messages :]")
             st.header(num_messages)
         with col2:
-            st.subheader("Total Used Words:")
+            st.subheader(":violet[Total Used Words :]")
             st.header(words)
 
         col3, col4 = st.columns(2)
         with col3:
-            st.subheader("Total Media Shared:")
+            st.subheader(":violet[Total Media Shared :]")
             st.header(num_media_messages)
         with col4:
-            st.subheader("Total Links Shared:")
+            st.subheader(":violet[Total Links Shared :]")
             st.header(num_links)
 
-        st.subheader("Total Members:")
-        st.header(members)
+        if selected_user == "Overall Group":
+            st.subheader(":violet[Total Members :]")
+            st.header(members)
 
         # monthly timeline
-        st.title("Monthly Timeline :")
+        st.title(":orange[Monthly Timeline :]")
         timeline = support.monthly_timeline(selected_user, df)
         fig, ax = plt.subplots()
         ax.plot(timeline['time'], timeline['message'], color='green')
@@ -72,7 +75,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
 
         # daily timeline
-        st.title("Daily Timeline :")
+        st.title(":orange[Daily Timeline :]")
         daily_timeline = support.daily_timeline(selected_user, df)
         fig, ax = plt.subplots()
         ax.plot(daily_timeline['only_date'], daily_timeline['message'], color='black')
@@ -80,7 +83,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
 
         # activity map
-        st.title('Activity Maps :')
+        st.title(':orange[Activity Maps :]')
         col1, col2 = st.columns(2)
 
         with col1:
@@ -99,7 +102,7 @@ if uploaded_file is not None:
             plt.xticks(rotation='vertical')
             st.pyplot(fig)
 
-        st.title("Weekly Activity Heatmap :")
+        st.header("Weekly Activity Heatmap :")
         user_heatmap = support.period_heatmap(selected_user, df)
         fig, ax = plt.subplots()
         sns.heatmap(user_heatmap, ax=ax)
@@ -115,7 +118,6 @@ if uploaded_file is not None:
             with col1:
                 st.title("Most Active user Percentage")
                 st.dataframe(new_df)
-
             with col2:
                 st.title('Most Busy Users')
                 ax.bar(x.index, x.values, color='green')
@@ -123,14 +125,14 @@ if uploaded_file is not None:
                 st.pyplot(fig)
 
         # WordCloud
-        st.title("Wordcloud :")
+        st.title(":orange[Wordcloud :]")
         df_wc = support.create_wordcloud(selected_user, df)
         fig, ax = plt.subplots()
         ax.imshow(df_wc)
         st.pyplot(fig)
 
         # most common words
-        st.title('Most Common Words :')
+        st.title(':orange[Most Common Words :]')
         most_common_df = support.most_common_words(selected_user, df)
 
         fig, ax = plt.subplots()
@@ -139,7 +141,7 @@ if uploaded_file is not None:
 
         # emoji analysis
         emoji_df = support.emoji_helper(selected_user, df)
-        st.title("Emoji Analysis :")
+        st.title(":orange[Emoji Analysis :]")
 
         col1, col2 = st.columns(2)
 
@@ -149,3 +151,6 @@ if uploaded_file is not None:
             fig, ax = plt.subplots()
             ax.pie(emoji_df["count"].head(), labels=emoji_df["emoji"].head(), autopct="%0.2f")
             st.pyplot(fig)
+
+else:
+    st.sidebar.header(":red[Please upload a whatsapp chat(messages) text file only]")
